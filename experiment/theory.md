@@ -1,7 +1,7 @@
 In communication systems, particularly frequency modulation (FM) and analog audio transmission, the signal is often affected by noise, especially at higher frequencies. To mitigate this issue and improve the signal-to-noise ratio (SNR), a technique involving pre-emphasis and de-emphasis is employed.
 
 
-1. . Pre-emphasis:
+### 1. Pre-emphasis:
 
 Pre-emphasis refers to the process of boosting the amplitude of high-frequency components of a signal before transmission. This is done because:
 
@@ -22,7 +22,7 @@ This time constant defines the frequency response of the filter:
 f_c = 1 / (2 * π * R * C)
 
 
-2. De-emphasis:
+### 2. De-emphasis:
 
 At the receiver end, de-emphasis is used to reverse the effect of pre-emphasis. It reduces the high-frequency components in the received signal back to their original level, effectively suppressing any high-frequency noise that was added during transmission.
 
@@ -32,7 +32,7 @@ The overall frequency response of the system is flat.
 
 The high-frequency noise is attenuated, improving audio clarity.
 
-3. Combined Effect:
+### 3. Combined Effect:
 
 When used together:
 
@@ -43,7 +43,7 @@ De-emphasis attenuates those same frequencies at the receiver.
 This technique results in an overall improvement in audio quality, especially under noisy channel conditions, by minimizing the effect of additive high-frequency noise.
 
 
-4. Practical Applications:
+### 4. Practical Applications:
 
 FM radio broadcasting
 
