@@ -1,13 +1,204 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-	<!-- Add CSS at the head of HTML file -->
-    <link rel="stylesheet" href="./css/main.css">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pre-emphasis & De-emphasis Circuit Simulator</title>
+    <link rel="stylesheet" href="css/main.css">
 </head>
 <body>
-		<!-- Your code goes here-->
+    <div class="container">
+        <!-- Header -->
+        <header class="header">
+            <h1>Pre-emphasis & De-emphasis Lab</h1>
+            <p>Interactive Audio Signal Processing Simulator</p>
+            
+            <div class="controls-header">
+                <button id="toggleCircuit" class="btn btn-primary">
+                    🔄 Switch to De-emphasis
+                </button>
+                <button id="toggleLanguage" class="btn btn-secondary">
+                    🗣️ हिंदी में सुनें
+                </button>
+            </div>
+        </header>
 
-	<!-- Add JS at the bottom of HTML file --> 
-        <script src="./js/main.js"></script>
+        <!-- Simulation Controls -->
+        <div class="simulation-controls">
+            <button id="startSimulation" class="btn btn-success">
+                ▶️ Start Simulation
+            </button>
+            <button id="stopSimulation" class="btn btn-danger" disabled>
+                ⏹️ Stop Simulation
+            </button>
+            <div class="simulation-status">
+                <span id="statusText">Simulation Stopped</span>
+                <div class="status-indicator" id="statusIndicator"></div>
+            </div>
+        </div>
+
+        <!-- Step Navigation -->
+        <nav class="step-nav">
+            <button class="step-btn active" data-step="1">Step 1: Circuit Selection</button>
+            <button class="step-btn" data-step="2">Step 2: Signal Analysis</button>
+            <button class="step-btn" data-step="3">Step 3: Frequency Response</button>
+            <button class="step-btn" data-step="4">Step 4: Waveform Comparison</button>
+        </nav>
+
+        <!-- Current Step Info -->
+        <div class="step-info">
+            <h3 id="stepTitle">Circuit Selection</h3>
+            <p id="stepDescription">Choose and understand Pre-emphasis or De-emphasis circuits</p>
+        </div>
+
+        <!-- Input Controls -->
+        <div class="controls-grid">
+            <div class="control-card">
+                <label>⚡ Resistance: <span id="resistanceValue">1000</span>Ω</label>
+                <input type="range" id="resistance" min="100" max="10000" value="1000" step="100">
+                <div class="value-buttons">
+                    <button class="value-btn" onclick="setResistance(500)">500Ω</button>
+                    <button class="value-btn" onclick="setResistance(1000)">1kΩ</button>
+                    <button class="value-btn" onclick="setResistance(2000)">2kΩ</button>
+                </div>
+            </div>
+            <div class="control-card">
+                <label>🔋 Capacitance: <span id="capacitanceValue">1</span>µF</label>
+                <input type="range" id="capacitance" min="0.1" max="10" value="1" step="0.1">
+                <div class="value-buttons">
+                    <button class="value-btn" onclick="setCapacitance(0.5)">0.5µF</button>
+                    <button class="value-btn" onclick="setCapacitance(1)">1µF</button>
+                    <button class="value-btn" onclick="setCapacitance(2)">2µF</button>
+                </div>
+            </div>
+            <div class="control-card">
+                <label>📶 Frequency: <span id="frequencyValue">1000</span>Hz</label>
+                <input type="range" id="frequency" min="10" max="10000" value="1000" step="10">
+                <div class="value-buttons">
+                    <button class="value-btn" onclick="setFrequency(500)">500Hz</button>
+                    <button class="value-btn" onclick="setFrequency(1000)">1kHz</button>
+                    <button class="value-btn" onclick="setFrequency(5000)">5kHz</button>
+                </div>
+            </div>
+            <div class="control-card">
+                <label>📊 Amplitude: <span id="amplitudeValue">1</span>V</label>
+                <input type="range" id="amplitude" min="0.1" max="5" value="1" step="0.1">
+                <div class="value-buttons">
+                    <button class="value-btn" onclick="setAmplitude(0.5)">0.5V</button>
+                    <button class="value-btn" onclick="setAmplitude(1)">1V</button>
+                    <button class="value-btn" onclick="setAmplitude(2)">2V</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <!-- Step 1: Circuit Diagram -->
+            <div id="step1" class="step-content active">
+                <div class="content-grid">
+                    <div class="circuit-container">
+                        <h3 id="circuitTitle">Pre-emphasis Circuit</h3>
+                        <svg id="circuitSvg" viewBox="0 0 500 300" class="circuit-diagram">
+                            <!-- Circuit will be drawn here by JavaScript -->
+                        </svg>
+                        <div class="circuit-info">
+                            <div class="info-card">
+                                <strong>Time Constant:</strong> τ = RC = <span id="timeConstant">1000</span> µs
+                            </div>
+                            <div class="info-card">
+                                <strong>Corner Frequency:</strong> fc = <span id="cornerFreq">159</span> Hz
+                            </div>
+                        </div>
+                    </div>
+                    <div class="description-card">
+                        <h3 id="circuitTypeTitle">Pre-emphasis Circuit</h3>
+                        <p id="circuitDescription">Pre-emphasis boosts high frequencies to improve signal-to-noise ratio in transmission systems.</p>
+                        <div class="specs">
+                            <p><strong>Filter Type:</strong> <span id="filterType">High-Pass</span></p>
+                            <p><strong>Application:</strong> <span id="application">FM radio transmitters, audio recording systems</span></p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 2: Signal Analysis -->
+            <div id="step2" class="step-content">
+                <div class="graph-controls">
+                    <button id="showWaveform" class="btn btn-graph">📊 Show Waveform Analysis</button>
+                </div>
+                <div id="waveformContainer" class="graph-container" style="display: none;">
+                    <h3>Signal Processing Analysis</h3>
+                    <canvas id="waveformCanvas" width="800" height="400"></canvas>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color input-signal"></div>
+                            <span>Input Signal</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color output-signal"></div>
+                            <span id="outputSignalLabel">Pre-emphasized Output</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 3: Frequency Response -->
+            <div id="step3" class="step-content">
+                <div class="graph-controls">
+                    <button id="showBode" class="btn btn-graph">📈 Show Frequency Response</button>
+                </div>
+                <div id="bodeContainer" class="graph-container" style="display: none;">
+                    <h3>Bode Plot Analysis</h3>
+                    <canvas id="bodeCanvas" width="800" height="400"></canvas>
+                    <div class="bode-info">
+                        <div class="info-card">
+                            <strong>Corner Frequency:</strong> <span id="bodeCornerFreq">159</span> Hz
+                        </div>
+                        <div class="info-card">
+                            <strong>Response Slope:</strong> <span id="responseSlope">+6</span> dB/octave
+                        </div>
+                        <div class="info-card">
+                            <strong>Application:</strong> <span id="bodeApplication">FM Transmitter</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Step 4: Comparison -->
+            <div id="step4" class="step-content">
+                <div class="graph-controls">
+                    <button id="showComparison" class="btn btn-graph">🔍 Show Signal Comparison</button>
+                </div>
+                <div id="comparisonContainer" class="graph-container" style="display: none;">
+                    <h3>Input vs Output Analysis</h3>
+                    <canvas id="comparisonCanvas" width="800" height="400"></canvas>
+                    <div class="analysis-results">
+                        <div class="result-card">
+                            <h4>Frequency Response</h4>
+                            <p id="frequencyAnalysis">Higher frequencies are amplified with a +6dB/octave slope above the corner frequency.</p>
+                        </div>
+                        <div class="result-card">
+                            <h4>Signal Quality</h4>
+                            <p id="qualityAnalysis">Improves SNR by emphasizing high frequencies before transmission.</p>
+                        </div>
+                        <div class="result-card">
+                            <h4>Corner Frequency</h4>
+                            <p>fc = <span id="comparisonCornerFreq">159</span> Hz</p>
+                            <small>3dB point where response changes</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <!-- Voice Guide -->
+        <div id="voiceGuide" class="voice-guide">
+            <button id="playVoice" class="btn btn-voice">🔊 Play Voice Guide</button>
+            <p id="voiceText">Welcome to Pre-emphasis and De-emphasis circuit simulator. Let's start with circuit selection.</p>
+        </div>
+    </div>
+
+    <script src="js/main.js"></script>
 </body>
 </html>
