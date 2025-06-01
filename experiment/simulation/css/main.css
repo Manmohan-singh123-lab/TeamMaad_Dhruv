@@ -28,7 +28,7 @@ body {
 }
 
 .header h1 {
-    font-size: 3rem;
+    font-size: 2.5rem;
     background: linear-gradient(45deg, #00ffff, #ff00ff);
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -91,6 +91,7 @@ body {
     transition: all 0.3s ease;
     text-decoration: none;
     display: inline-block;
+    font-size: 14px;
 }
 
 .btn:disabled {
@@ -176,6 +177,7 @@ body {
     border-radius: 20px;
     cursor: pointer;
     transition: all 0.3s ease;
+    font-size: 14px;
 }
 
 .step-btn.active {
@@ -201,13 +203,13 @@ body {
 
 .step-info h3 {
     color: #00ffff;
-    font-size: 1.8rem;
+    font-size: 1.5rem;
     margin-bottom: 10px;
 }
 
 .step-info p {
     color: #ffffff;
-    font-size: 1.1rem;
+    font-size: 1rem;
 }
 
 /* Controls Grid */
@@ -230,6 +232,7 @@ body {
     color: #a855f7;
     font-weight: bold;
     margin-bottom: 10px;
+    font-size: 14px;
 }
 
 .control-card input[type="range"] {
@@ -266,7 +269,7 @@ body {
     color: #00ffff;
     border-radius: 10px;
     cursor: pointer;
-    font-size: 0.8rem;
+    font-size: 12px;
     transition: all 0.3s ease;
 }
 
@@ -312,6 +315,7 @@ body {
     background: rgba(0, 0, 0, 0.2);
     border: 1px solid rgba(147, 51, 234, 0.3);
     border-radius: 10px;
+    min-height: 300px;
 }
 
 .circuit-info {
@@ -326,7 +330,7 @@ body {
     border-radius: 8px;
     padding: 10px;
     color: #ffffff;
-    font-size: 0.9rem;
+    font-size: 14px;
 }
 
 /* Description Card */
@@ -347,11 +351,12 @@ body {
     color: #ffffff;
     margin-bottom: 15px;
     line-height: 1.6;
+    font-size: 14px;
 }
 
 .specs p {
     margin-bottom: 10px;
-    font-size: 0.95rem;
+    font-size: 14px;
 }
 
 .specs strong {
@@ -390,6 +395,7 @@ body {
     border-radius: 10px;
     display: block;
     margin: 0 auto;
+    max-height: 300px;
 }
 
 /* Legend */
@@ -429,7 +435,7 @@ body {
 .legend span {
     color: #ffffff;
     font-weight: bold;
-    font-size: 0.9rem;
+    font-size: 14px;
 }
 
 /* Bode and Analysis Info */
@@ -450,18 +456,18 @@ body {
 .result-card h4 {
     color: #a855f7;
     margin-bottom: 8px;
-    font-size: 1rem;
+    font-size: 16px;
 }
 
 .result-card p {
     color: #ffffff;
-    font-size: 0.9rem;
+    font-size: 14px;
     margin-bottom: 5px;
 }
 
 .result-card small {
     color: #00ffff;
-    font-size: 0.8rem;
+    font-size: 12px;
 }
 
 /* Voice Guide */
@@ -479,7 +485,7 @@ body {
 
 .voice-guide p {
     color: #ffffff;
-    font-size: 0.9rem;
+    font-size: 14px;
     margin-top: 10px;
     line-height: 1.4;
 }

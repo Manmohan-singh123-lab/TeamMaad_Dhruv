@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -99,7 +98,7 @@
                 <div class="content-grid">
                     <div class="circuit-container">
                         <h3 id="circuitTitle">Pre-emphasis Circuit</h3>
-                        <svg id="circuitSvg" viewBox="0 0 500 300" class="circuit-diagram">
+                        <svg id="circuitSvg" viewBox="0 0 600 350" class="circuit-diagram">
                             <!-- Circuit will be drawn here by JavaScript -->
                         </svg>
                         <div class="circuit-info">
@@ -171,8 +170,18 @@
                     <button id="showComparison" class="btn btn-graph">🔍 Show Signal Comparison</button>
                 </div>
                 <div id="comparisonContainer" class="graph-container" style="display: none;">
-                    <h3>Input vs Output Analysis</h3>
+                    <h3>Input vs Output Waveform Comparison</h3>
                     <canvas id="comparisonCanvas" width="800" height="400"></canvas>
+                    <div class="legend">
+                        <div class="legend-item">
+                            <div class="legend-color input-signal"></div>
+                            <span>Input Signal</span>
+                        </div>
+                        <div class="legend-item">
+                            <div class="legend-color output-signal"></div>
+                            <span id="comparisonOutputLabel">Processed Output</span>
+                        </div>
+                    </div>
                     <div class="analysis-results">
                         <div class="result-card">
                             <h4>Frequency Response</h4>

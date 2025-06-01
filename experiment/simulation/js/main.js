@@ -8,6 +8,7 @@ let frequency = 1000;
 let amplitude = 1;
 let isSimulationRunning = false;
 let animationId = null;
+let time = 0;
 
 // Voice guidance texts
 const voiceTexts = {
@@ -95,6 +96,7 @@ function initializeControls() {
 function startSimulation() {
     console.log('Starting simulation...');
     isSimulationRunning = true;
+    time = 0;
     
     // Update UI
     document.getElementById('startSimulation').disabled = true;
@@ -105,13 +107,13 @@ function startSimulation() {
     // Update circuits and graphs if visible
     drawCircuit();
     if (document.getElementById('waveformContainer').style.display !== 'none') {
-        drawWaveform();
+        startWaveformAnimation();
     }
     if (document.getElementById('bodeContainer').style.display !== 'none') {
         drawBodePlot();
     }
     if (document.getElementById('comparisonContainer').style.display !== 'none') {
-        drawComparison();
+        startComparisonAnimation();
     }
     
     console.log('Simulation started successfully');
@@ -210,12 +212,14 @@ function updateCircuit() {
     const circuitTitle = document.getElementById('circuitTitle');
     const circuitTypeTitle = document.getElementById('circuitTypeTitle');
     const outputSignalLabel = document.getElementById('outputSignalLabel');
+    const comparisonOutputLabel = document.getElementById('comparisonOutputLabel');
     
     if (circuitType === 'preemphasis') {
         toggleBtn.textContent = '🔄 Switch to De-emphasis';
         circuitTitle.textContent = 'Pre-emphasis Circuit';
         circuitTypeTitle.textContent = 'Pre-emphasis Circuit';
         outputSignalLabel.textContent = 'Pre-emphasized Output';
+        comparisonOutputLabel.textContent = 'Pre-emphasized Output';
         
         document.getElementById('circuitDescription').textContent = 
             'Pre-emphasis boosts high frequencies to improve signal-to-noise ratio in transmission systems.';
@@ -226,6 +230,7 @@ function updateCircuit() {
         circuitTitle.textContent = 'De-emphasis Circuit';
         circuitTypeTitle.textContent = 'De-emphasis Circuit';
         outputSignalLabel.textContent = 'De-emphasized Output';
+        comparisonOutputLabel.textContent = 'De-emphasized Output';
         
         document.getElementById('circuitDescription').textContent = 
             'De-emphasis attenuates high frequencies to restore the original signal after pre-emphasis.';
@@ -276,9 +281,6 @@ function updateFrequency(e) {
 
 function updateFrequencyDisplay() {
     document.getElementById('frequencyValue').textContent = frequency;
-    if (isSimulationRunning && document.getElementById('waveformContainer').style.display !== 'none') {
-        drawWaveform();
-    }
 }
 
 function updateAmplitude(e) {
@@ -288,9 +290,6 @@ function updateAmplitude(e) {
 
 function updateAmplitudeDisplay() {
     document.getElementById('amplitudeValue').textContent = amplitude;
-    if (isSimulationRunning && document.getElementById('waveformContainer').style.display !== 'none') {
-        drawWaveform();
-    }
 }
 
 function updateValues() {
@@ -331,7 +330,7 @@ function updateCalculatedValues() {
     }
 }
 
-// Circuit drawing
+// Circuit drawing functions
 function drawCircuit() {
     console.log('Drawing circuit...');
     const svg = document.getElementById('circuitSvg');
@@ -340,15 +339,14 @@ function drawCircuit() {
         return;
     }
     
-    svg.innerHTML = ''; // Clear existing content
+    svg.innerHTML = '';
     
-    // Create SVG elements
     const svgNS = "http://www.w3.org/2000/svg";
     
     // Add background
     const bgRect = document.createElementNS(svgNS, 'rect');
-    bgRect.setAttribute('width', '500');
-    bgRect.setAttribute('height', '300');
+    bgRect.setAttribute('width', '600');
+    bgRect.setAttribute('height', '350');
     bgRect.setAttribute('fill', 'rgba(0,0,0,0.8)');
     svg.appendChild(bgRect);
     
@@ -362,214 +360,203 @@ function drawCircuit() {
 }
 
 function drawPreemphasisCircuit(svg, svgNS) {
-    // Input terminals
-    const inputPosTerminal = createCircle(svgNS, 50, 120, 4, '#ff0000');
-    const inputNegTerminal = createCircle(svgNS, 50, 180, 4, '#000000');
-    svg.appendChild(inputPosTerminal);
-    svg.appendChild(inputNegTerminal);
+    // Title
+    const title = createText(svgNS, 300, 30, 'Pre-emphasis Circuit (High-Pass Filter)', '#00ffff', '18px');
+    title.setAttribute('text-anchor', 'middle');
+    title.setAttribute('font-weight', 'bold');
+    svg.appendChild(title);
     
-    // Input labels
-    const vinPosText = createText(svgNS, 20, 115, 'Vin+', '#ff0000', '12px');
-    const vinNegText = createText(svgNS, 20, 185, 'Vin-', '#000000', '12px');
-    svg.appendChild(vinPosText);
-    svg.appendChild(vinNegText);
+    // Input terminal
+    const inputTerminal = createCircle(svgNS, 80, 175, 6, '#ff0000');
+    inputTerminal.setAttribute('stroke', '#ffffff');
+    inputTerminal.setAttribute('stroke-width', '2');
+    svg.appendChild(inputTerminal);
     
-    // Main connection line from positive input
-    const inputLine = createLine(svgNS, 54, 120, 120, 120, '#00ffff', 3);
+    const inputLabel = createText(svgNS, 50, 170, 'Vin', '#ff0000', '16px');
+    inputLabel.setAttribute('font-weight', 'bold');
+    svg.appendChild(inputLabel);
+    
+    // Input line to resistor
+    const inputLine = createLine(svgNS, 86, 175, 150, 175, '#00ffff', 4);
     svg.appendChild(inputLine);
     
     // Resistor
-    const resistorBody = createRectangle(svgNS, 120, 110, 80, 20, 'none', '#ffff00', 3);
+    const resistorBody = createRectangle(svgNS, 150, 165, 100, 20, 'rgba(255,255,0,0.2)', '#ffff00', 3);
+    resistorBody.setAttribute('rx', '5');
     svg.appendChild(resistorBody);
     
-    // Resistor zigzag pattern
-    const resistorPath = document.createElementNS(svgNS, 'path');
-    resistorPath.setAttribute('d', 'M120 120 L130 110 L140 130 L150 110 L160 130 L170 110 L180 120 L190 130 L200 120');
-    resistorPath.setAttribute('stroke', '#ffff00');
-    resistorPath.setAttribute('stroke-width', '3');
-    resistorPath.setAttribute('fill', 'none');
-    svg.appendChild(resistorPath);
-    
-    // Resistor labels
-    const rText = createText(svgNS, 155, 100, 'R', '#ffff00', '14px');
-    const rValue = createText(svgNS, 155, 155, resistance + 'Ω', '#ffff00', '12px');
+    const rText = createText(svgNS, 200, 155, 'R', '#ffff00', '16px');
+    rText.setAttribute('text-anchor', 'middle');
+    rText.setAttribute('font-weight', 'bold');
     svg.appendChild(rText);
+    
+    const rValue = createText(svgNS, 200, 205, resistance + 'Ω', '#ffff00', '14px');
+    rValue.setAttribute('text-anchor', 'middle');
+    rValue.setAttribute('font-weight', 'bold');
     svg.appendChild(rValue);
     
-    // Connection from resistor to capacitor
-    const conn1 = createLine(svgNS, 200, 120, 250, 120, '#00ffff', 3);
-    svg.appendChild(conn1);
+    // Resistor to output
+    const resistorToOutput = createLine(svgNS, 250, 175, 320, 175, '#00ffff', 4);
+    svg.appendChild(resistorToOutput);
     
     // Capacitor
-    const cap1 = createLine(svgNS, 250, 100, 250, 140, '#ff00ff', 5);
-    const cap2 = createLine(svgNS, 270, 100, 270, 140, '#ff00ff', 5);
+    const cap1 = createLine(svgNS, 320, 150, 320, 200, '#ff00ff', 6);
+    const cap2 = createLine(svgNS, 340, 150, 340, 200, '#ff00ff', 6);
     svg.appendChild(cap1);
     svg.appendChild(cap2);
     
-    // Capacitor connection lines
-    const capConn1 = createLine(svgNS, 240, 120, 250, 120, '#00ffff', 3);
-    const capConn2 = createLine(svgNS, 270, 120, 280, 120, '#00ffff', 3);
+    const capConn1 = createLine(svgNS, 310, 175, 320, 175, '#00ffff', 4);
+    const capConn2 = createLine(svgNS, 340, 175, 350, 175, '#00ffff', 4);
     svg.appendChild(capConn1);
     svg.appendChild(capConn2);
     
-    // Capacitor labels
-    const cText = createText(svgNS, 260, 85, 'C', '#ff00ff', '14px');
-    const cValue = createText(svgNS, 260, 175, capacitance + 'µF', '#ff00ff', '12px');
+    const cText = createText(svgNS, 330, 135, 'C', '#ff00ff', '16px');
+    cText.setAttribute('text-anchor', 'middle');
+    cText.setAttribute('font-weight', 'bold');
     svg.appendChild(cText);
+    
+    const cValue = createText(svgNS, 330, 230, capacitance + 'µF', '#ff00ff', '14px');
+    cValue.setAttribute('text-anchor', 'middle');
+    cValue.setAttribute('font-weight', 'bold');
     svg.appendChild(cValue);
     
-    // Output connection (across resistor)
-    const outputJunction = createCircle(svgNS, 120, 120, 3, '#00ff00');
-    svg.appendChild(outputJunction);
+    // Output terminal
+    const outputTerminal = createCircle(svgNS, 450, 175, 6, '#00ff00');
+    outputTerminal.setAttribute('stroke', '#ffffff');
+    outputTerminal.setAttribute('stroke-width', '2');
+    svg.appendChild(outputTerminal);
     
-    const outputConn1 = createLine(svgNS, 120, 120, 120, 80, '#00ff00', 3);
-    const outputConn2 = createLine(svgNS, 120, 80, 380, 80, '#00ff00', 3);
-    const outputConn3 = createLine(svgNS, 380, 80, 380, 120, '#00ff00', 3);
+    const outputLabel = createText(svgNS, 470, 170, 'Vo', '#00ff00', '16px');
+    outputLabel.setAttribute('font-weight', 'bold');
+    svg.appendChild(outputLabel);
+    
+    // Output connection from resistor
+    const outputConn1 = createLine(svgNS, 320, 175, 320, 120, '#00ff00', 4);
+    const outputConn2 = createLine(svgNS, 320, 120, 450, 120, '#00ff00', 4);
+    const outputConn3 = createLine(svgNS, 450, 120, 450, 175, '#00ff00', 4);
     svg.appendChild(outputConn1);
     svg.appendChild(outputConn2);
     svg.appendChild(outputConn3);
     
-    // Output terminals
-    const outputPosTerminal = createCircle(svgNS, 380, 120, 4, '#ff0000');
-    const outputNegTerminal = createCircle(svgNS, 380, 180, 4, '#000000');
-    svg.appendChild(outputPosTerminal);
-    svg.appendChild(outputNegTerminal);
-    
-    // Output labels
-    const voutPosText = createText(svgNS, 390, 115, 'Vo+', '#ff0000', '12px');
-    const voutNegText = createText(svgNS, 390, 185, 'Vo-', '#000000', '12px');
-    svg.appendChild(voutPosText);
-    svg.appendChild(voutNegText);
-    
     // Ground connections
-    const gnd1 = createLine(svgNS, 280, 120, 320, 120, '#00ffff', 3);
-    const gnd2 = createLine(svgNS, 320, 120, 320, 200, '#00ffff', 3);
-    const gnd3 = createLine(svgNS, 50, 180, 50, 200, '#00ffff', 3);
-    const gnd4 = createLine(svgNS, 380, 180, 380, 200, '#00ffff', 3);
-    svg.appendChild(gnd1);
-    svg.appendChild(gnd2);
-    svg.appendChild(gnd3);
-    svg.appendChild(gnd4);
+    const gndConn1 = createLine(svgNS, 350, 175, 400, 175, '#00ffff', 4);
+    const gndConn2 = createLine(svgNS, 400, 175, 400, 250, '#00ffff', 4);
+    const gndConn3 = createLine(svgNS, 80, 175, 80, 250, '#00ffff', 4);
+    const gndConn4 = createLine(svgNS, 450, 175, 450, 250, '#00ffff', 4);
+    svg.appendChild(gndConn1);
+    svg.appendChild(gndConn2);
+    svg.appendChild(gndConn3);
+    svg.appendChild(gndConn4);
     
     // Ground symbols
-    drawGroundSymbol(svg, svgNS, 50, 200);
-    drawGroundSymbol(svg, svgNS, 320, 200);
-    drawGroundSymbol(svg, svgNS, 380, 200);
-    
-    // Circuit title
-    const title = createText(svgNS, 250, 30, 'Pre-emphasis Filter (High-Pass)', '#00ffff', '16px');
-    title.setAttribute('text-anchor', 'middle');
-    title.setAttribute('font-weight', 'bold');
-    svg.appendChild(title);
+    drawGroundSymbol(svg, svgNS, 80, 250);
+    drawGroundSymbol(svg, svgNS, 400, 250);
+    drawGroundSymbol(svg, svgNS, 450, 250);
 }
 
 function drawDeemphasisCircuit(svg, svgNS) {
-    // Input terminals
-    const inputPosTerminal = createCircle(svgNS, 50, 120, 4, '#ff0000');
-    const inputNegTerminal = createCircle(svgNS, 50, 180, 4, '#000000');
-    svg.appendChild(inputPosTerminal);
-    svg.appendChild(inputNegTerminal);
+    // Title
+    const title = createText(svgNS, 300, 30, 'De-emphasis Circuit (Low-Pass Filter)', '#00ffff', '18px');
+    title.setAttribute('text-anchor', 'middle');
+    title.setAttribute('font-weight', 'bold');
+    svg.appendChild(title);
     
-    // Input labels
-    const vinPosText = createText(svgNS, 20, 115, 'Vin+', '#ff0000', '12px');
-    const vinNegText = createText(svgNS, 20, 185, 'Vin-', '#000000', '12px');
-    svg.appendChild(vinPosText);
-    svg.appendChild(vinNegText);
+    // Input terminal
+    const inputTerminal = createCircle(svgNS, 80, 175, 6, '#ff0000');
+    inputTerminal.setAttribute('stroke', '#ffffff');
+    inputTerminal.setAttribute('stroke-width', '2');
+    svg.appendChild(inputTerminal);
     
-    // Main input line to junction
-    const inputLine = createLine(svgNS, 54, 120, 150, 120, '#00ffff', 3);
+    const inputLabel = createText(svgNS, 50, 170, 'Vin', '#ff0000', '16px');
+    inputLabel.setAttribute('font-weight', 'bold');
+    svg.appendChild(inputLabel);
+    
+    // Input line to junction
+    const inputLine = createLine(svgNS, 86, 175, 180, 175, '#00ffff', 4);
     svg.appendChild(inputLine);
     
     // Junction point
-    const junction = createCircle(svgNS, 150, 120, 3, '#00ffff');
+    const junction = createCircle(svgNS, 180, 175, 4, '#00ffff');
     svg.appendChild(junction);
     
     // Resistor branch (upper path)
-    const resistorBranch1 = createLine(svgNS, 150, 120, 150, 80, '#00ffff', 3);
-    const resistorBranch2 = createLine(svgNS, 150, 80, 300, 80, '#00ffff', 3);
+    const resistorBranch1 = createLine(svgNS, 180, 175, 180, 120, '#00ffff', 4);
+    const resistorBranch2 = createLine(svgNS, 180, 120, 380, 120, '#00ffff', 4);
     svg.appendChild(resistorBranch1);
     svg.appendChild(resistorBranch2);
     
     // Resistor
-    const resistorBody = createRectangle(svgNS, 200, 70, 80, 20, 'none', '#ffff00', 3);
+    const resistorBody = createRectangle(svgNS, 250, 110, 100, 20, 'rgba(255,255,0,0.2)', '#ffff00', 3);
+    resistorBody.setAttribute('rx', '5');
     svg.appendChild(resistorBody);
     
-    // Resistor zigzag
-    const resistorPath = document.createElementNS(svgNS, 'path');
-    resistorPath.setAttribute('d', 'M200 80 L210 70 L220 90 L230 70 L240 90 L250 70 L260 80 L270 90 L280 80');
-    resistorPath.setAttribute('stroke', '#ffff00');
-    resistorPath.setAttribute('stroke-width', '3');
-    resistorPath.setAttribute('fill', 'none');
-    svg.appendChild(resistorPath);
-    
-    // Resistor labels
-    const rText = createText(svgNS, 240, 60, 'R', '#ffff00', '14px');
-    const rValue = createText(svgNS, 240, 50, resistance + 'Ω', '#ffff00', '12px');
+    const rText = createText(svgNS, 300, 100, 'R', '#ffff00', '16px');
+    rText.setAttribute('text-anchor', 'middle');
+    rText.setAttribute('font-weight', 'bold');
     svg.appendChild(rText);
+    
+    const rValue = createText(svgNS, 300, 85, resistance + 'Ω', '#ffff00', '14px');
+    rValue.setAttribute('text-anchor', 'middle');
+    rValue.setAttribute('font-weight', 'bold');
     svg.appendChild(rValue);
     
     // Capacitor branch (lower path)
-    const capBranch1 = createLine(svgNS, 150, 120, 150, 160, '#00ffff', 3);
-    const capBranch2 = createLine(svgNS, 150, 160, 300, 160, '#00ffff', 3);
+    const capBranch1 = createLine(svgNS, 180, 175, 180, 230, '#00ffff', 4);
+    const capBranch2 = createLine(svgNS, 180, 230, 380, 230, '#00ffff', 4);
     svg.appendChild(capBranch1);
     svg.appendChild(capBranch2);
     
     // Capacitor
-    const cap1 = createLine(svgNS, 210, 140, 210, 180, '#ff00ff', 5);
-    const cap2 = createLine(svgNS, 230, 140, 230, 180, '#ff00ff', 5);
+    const cap1 = createLine(svgNS, 270, 210, 270, 250, '#ff00ff', 6);
+    const cap2 = createLine(svgNS, 290, 210, 290, 250, '#ff00ff', 6);
     svg.appendChild(cap1);
     svg.appendChild(cap2);
     
-    // Capacitor connection lines
-    const capConn1 = createLine(svgNS, 200, 160, 210, 160, '#00ffff', 3);
-    const capConn2 = createLine(svgNS, 230, 160, 240, 160, '#00ffff', 3);
+    const capConn1 = createLine(svgNS, 260, 230, 270, 230, '#00ffff', 4);
+    const capConn2 = createLine(svgNS, 290, 230, 300, 230, '#00ffff', 4);
     svg.appendChild(capConn1);
     svg.appendChild(capConn2);
     
-    // Capacitor labels
-    const cText = createText(svgNS, 220, 205, 'C', '#ff00ff', '14px');
-    const cValue = createText(svgNS, 220, 220, capacitance + 'µF', '#ff00ff', '12px');
+    const cText = createText(svgNS, 280, 275, 'C', '#ff00ff', '16px');
+    cText.setAttribute('text-anchor', 'middle');
+    cText.setAttribute('font-weight', 'bold');
     svg.appendChild(cText);
+    
+    const cValue = createText(svgNS, 280, 290, capacitance + 'µF', '#ff00ff', '14px');
+    cValue.setAttribute('text-anchor', 'middle');
+    cValue.setAttribute('font-weight', 'bold');
     svg.appendChild(cValue);
     
     // Output junction and connection
-    const outputJunction1 = createCircle(svgNS, 300, 80, 3, '#00ff00');
-    const outputJunction2 = createCircle(svgNS, 300, 160, 3, '#00ff00');
+    const outputJunction1 = createCircle(svgNS, 380, 120, 4, '#00ff00');
+    const outputJunction2 = createCircle(svgNS, 380, 230, 4, '#00ff00');
     svg.appendChild(outputJunction1);
     svg.appendChild(outputJunction2);
     
-    const outputConn1 = createLine(svgNS, 300, 80, 300, 160, '#00ff00', 3);
-    const outputConn2 = createLine(svgNS, 300, 120, 380, 120, '#00ff00', 3);
+    const outputConn1 = createLine(svgNS, 380, 120, 380, 230, '#00ff00', 4);
+    const outputConn2 = createLine(svgNS, 380, 175, 450, 175, '#00ff00', 4);
     svg.appendChild(outputConn1);
     svg.appendChild(outputConn2);
     
-    // Output terminals
-    const outputPosTerminal = createCircle(svgNS, 380, 120, 4, '#ff0000');
-    const outputNegTerminal = createCircle(svgNS, 380, 180, 4, '#000000');
-    svg.appendChild(outputPosTerminal);
-    svg.appendChild(outputNegTerminal);
+    // Output terminal
+    const outputTerminal = createCircle(svgNS, 450, 175, 6, '#00ff00');
+    outputTerminal.setAttribute('stroke', '#ffffff');
+    outputTerminal.setAttribute('stroke-width', '2');
+    svg.appendChild(outputTerminal);
     
-    // Output labels
-    const voutPosText = createText(svgNS, 390, 115, 'Vo+', '#ff0000', '12px');
-    const voutNegText = createText(svgNS, 390, 185, 'Vo-', '#000000', '12px');
-    svg.appendChild(voutPosText);
-    svg.appendChild(voutNegText);
+    const outputLabel = createText(svgNS, 470, 170, 'Vo', '#00ff00', '16px');
+    outputLabel.setAttribute('font-weight', 'bold');
+    svg.appendChild(outputLabel);
     
     // Ground connections
-    const gnd1 = createLine(svgNS, 50, 180, 50, 220, '#00ffff', 3);
-    const gnd2 = createLine(svgNS, 380, 180, 380, 220, '#00ffff', 3);
+    const gnd1 = createLine(svgNS, 80, 175, 80, 280, '#00ffff', 4);
+    const gnd2 = createLine(svgNS, 450, 175, 450, 280, '#00ffff', 4);
     svg.appendChild(gnd1);
     svg.appendChild(gnd2);
     
     // Ground symbols
-    drawGroundSymbol(svg, svgNS, 50, 220);
-    drawGroundSymbol(svg, svgNS, 380, 220);
-    
-    // Circuit title
-    const title = createText(svgNS, 250, 30, 'De-emphasis Filter (Low-Pass)', '#00ffff', '16px');
-    title.setAttribute('text-anchor', 'middle');
-    title.setAttribute('font-weight', 'bold');
-    svg.appendChild(title);
+    drawGroundSymbol(svg, svgNS, 80, 280);
+    drawGroundSymbol(svg, svgNS, 450, 280);
 }
 
 // Helper functions for SVG elements
@@ -611,21 +598,22 @@ function createText(svgNS, x, y, text, color, fontSize) {
     textElement.setAttribute('y', y);
     textElement.setAttribute('fill', color);
     textElement.setAttribute('font-size', fontSize);
-    textElement.setAttribute('font-weight', 'bold');
+    textElement.setAttribute('font-family', 'Arial, sans-serif');
     textElement.textContent = text;
     return textElement;
 }
 
 function drawGroundSymbol(svg, svgNS, x, y) {
-    const gnd1 = createLine(svgNS, x - 10, y, x + 10, y, '#00ffff', 4);
-    const gnd2 = createLine(svgNS, x - 6, y + 6, x + 6, y + 6, '#00ffff', 3);
-    const gnd3 = createLine(svgNS, x - 3, y + 12, x + 3, y + 12, '#00ffff', 2);
+    const gnd1 = createLine(svgNS, x - 15, y, x + 15, y, '#00ffff', 4);
+    const gnd2 = createLine(svgNS, x - 10, y + 8, x + 10, y + 8, '#00ffff', 3);
+    const gnd3 = createLine(svgNS, x - 5, y + 16, x + 5, y + 16, '#00ffff', 2);
     svg.appendChild(gnd1);
     svg.appendChild(gnd2);
     svg.appendChild(gnd3);
     
-    const gndText = createText(svgNS, x, y + 25, 'GND', '#00ffff', '10px');
+    const gndText = createText(svgNS, x, y + 35, 'GND', '#00ffff', '12px');
     gndText.setAttribute('text-anchor', 'middle');
+    gndText.setAttribute('font-weight', 'bold');
     svg.appendChild(gndText);
 }
 
@@ -634,6 +622,11 @@ function hideAllGraphs() {
     document.getElementById('waveformContainer').style.display = 'none';
     document.getElementById('bodeContainer').style.display = 'none';
     document.getElementById('comparisonContainer').style.display = 'none';
+    
+    if (animationId) {
+        cancelAnimationFrame(animationId);
+        animationId = null;
+    }
 }
 
 function showWaveform() {
@@ -645,7 +638,7 @@ function showWaveform() {
     hideAllGraphs();
     document.getElementById('waveformContainer').style.display = 'block';
     document.getElementById('waveformContainer').classList.add('fade-in');
-    drawWaveform();
+    startWaveformAnimation();
 }
 
 function showBode() {
@@ -669,24 +662,60 @@ function showComparison() {
     hideAllGraphs();
     document.getElementById('comparisonContainer').style.display = 'block';
     document.getElementById('comparisonContainer').classList.add('fade-in');
-    drawComparison();
+    startComparisonAnimation();
+}
+
+// Animation functions
+function startWaveformAnimation() {
+    const canvas = document.getElementById('waveformCanvas');
+    if (!canvas) return;
+    
+    function animate() {
+        if (!isSimulationRunning || document.getElementById('waveformContainer').style.display === 'none') {
+            return;
+        }
+        
+        drawWaveform();
+        time += 0.1;
+        animationId = requestAnimationFrame(animate);
+    }
+    
+    animate();
+}
+
+function startComparisonAnimation() {
+    const canvas = document.getElementById('comparisonCanvas');
+    if (!canvas) return;
+    
+    function animate() {
+        if (!isSimulationRunning || document.getElementById('comparisonContainer').style.display === 'none') {
+            return;
+        }
+        
+        drawComparison();
+        time += 0.1;
+        animationId = requestAnimationFrame(animate);
+    }
+    
+    animate();
 }
 
 function drawWaveform() {
-    console.log('Drawing waveform...');
     const canvas = document.getElementById('waveformCanvas');
-    if (!canvas) {
-        console.error('Waveform canvas not found');
-        return;
-    }
+    if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
     
     // Clear canvas
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, 'rgba(0, 0, 0, 0.9)');
+    gradient.addColorStop(1, 'rgba(0, 50, 50, 0.9)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
     
-    const centerY = canvas.height / 2;
+    const centerY = height / 2;
     const baseAmplitude = 80;
     const scaledAmplitude = baseAmplitude * amplitude;
     const timeConstant = resistance * capacitance / 1000000;
@@ -709,35 +738,35 @@ function drawWaveform() {
     }
     
     // Draw grid
-    ctx.strokeStyle = 'rgba(0, 255, 255, 0.2)';
+    ctx.strokeStyle = 'rgba(0, 255, 255, 0.15)';
     ctx.lineWidth = 1;
-    for (let i = 0; i < canvas.width; i += 50) {
+    for (let i = 0; i < width; i += 50) {
         ctx.beginPath();
         ctx.moveTo(i, 0);
-        ctx.lineTo(i, canvas.height);
+        ctx.lineTo(i, height);
         ctx.stroke();
     }
-    for (let i = 0; i < canvas.height; i += 40) {
+    for (let i = 0; i < height; i += 40) {
         ctx.beginPath();
         ctx.moveTo(0, i);
-        ctx.lineTo(canvas.width, i);
+        ctx.lineTo(width, i);
         ctx.stroke();
     }
     
     // Center line
-    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
     ctx.lineWidth = 2;
     ctx.beginPath();
     ctx.moveTo(0, centerY);
-    ctx.lineTo(canvas.width, centerY);
+    ctx.lineTo(width, centerY);
     ctx.stroke();
     
     // Draw input waveform
     ctx.strokeStyle = '#00ffff';
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    for (let x = 0; x < canvas.width; x++) {
-        const t = (x / canvas.width) * 6 * Math.PI;
+    for (let x = 0; x < width; x++) {
+        const t = (x / width) * 8 * Math.PI + time;
         const y = centerY - scaledAmplitude * Math.sin(t);
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
@@ -746,55 +775,188 @@ function drawWaveform() {
     
     // Draw output waveform
     ctx.strokeStyle = '#00ff00';
-    ctx.lineWidth = 4;
+    ctx.lineWidth = 3;
     ctx.beginPath();
-    for (let x = 0; x < canvas.width; x++) {
-        const t = (x / canvas.width) * 6 * Math.PI;
+    for (let x = 0; x < width; x++) {
+        const t = (x / width) * 8 * Math.PI + time;
         const y = centerY - scaledAmplitude * gainMagnitude * Math.sin(t + phaseShift);
         if (x === 0) ctx.moveTo(x, y);
         else ctx.lineTo(x, y);
     }
     ctx.stroke();
     
-    // Labels with background
+    // Info panel
     ctx.fillStyle = 'rgba(0, 0, 0, 0.8)';
-    ctx.fillRect(10, 10, 300, 120);
+    ctx.fillRect(15, 15, 400, 120);
+    ctx.strokeStyle = 'rgba(0, 255, 255, 0.5)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(15, 15, 400, 120);
     
+    // Labels
     ctx.fillStyle = '#00ffff';
     ctx.font = 'bold 16px Arial';
-    ctx.fillText('Input Signal', 20, 35);
+    ctx.fillText('Input Signal (Vin)', 25, 40);
     
     ctx.fillStyle = '#00ff00';
-    ctx.fillText('Output Signal', 20, 60);
+    ctx.fillText('Output Signal (Vout)', 25, 65);
     
     ctx.fillStyle = '#ffff00';
-    ctx.fillText(`Gain: ${(20 * Math.log10(gainMagnitude)).toFixed(1)} dB`, 20, 85);
+    ctx.fillText(`Gain: ${(20 * Math.log10(gainMagnitude)).toFixed(1)} dB`, 25, 90);
     
     ctx.fillStyle = '#ff00ff';
-    ctx.fillText(`Phase: ${(phaseShift * 180 / Math.PI).toFixed(1)}°`, 20, 110);
+    ctx.fillText(`Phase: ${(phaseShift * 180 / Math.PI).toFixed(1)}°`, 25, 115);
     
-    console.log('Waveform drawn successfully');
+    ctx.fillStyle = '#ffffff';
+    ctx.font = '14px Arial';
+    ctx.fillText(`f = ${frequency}Hz, A = ${amplitude}V`, 220, 40);
+    ctx.fillText(`R = ${resistance}Ω, C = ${capacitance}µF`, 220, 65);
+    ctx.fillText(`τ = ${(timeConstant * 1000000).toFixed(1)}µs`, 220, 90);
+    ctx.fillText(`fc = ${Math.round(1/(2*Math.PI*timeConstant))}Hz`, 220, 115);
+}
+
+function drawComparison() {
+    const canvas = document.getElementById('comparisonCanvas');
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
+    
+    // Clear canvas
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, 'rgba(0, 0, 0, 0.9)');
+    gradient.addColorStop(1, 'rgba(50, 0, 50, 0.9)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
+    
+    const centerY = height / 2;
+    const baseAmplitude = 70;
+    const scaledAmplitude = baseAmplitude * amplitude;
+    const timeConstant = resistance * capacitance / 1000000;
+    
+    // Calculate transfer function
+    const omega = 2 * Math.PI * frequency;
+    let gainMagnitude, phaseShift;
+    
+    if (circuitType === 'preemphasis') {
+        const realPart = 1;
+        const imagPart = omega * timeConstant;
+        gainMagnitude = Math.sqrt(realPart * realPart + imagPart * imagPart);
+        phaseShift = Math.atan2(imagPart, realPart);
+    } else {
+        const realPart = 1;
+        const imagPart = omega * timeConstant;
+        const denomMagnitude = Math.sqrt(realPart * realPart + imagPart * imagPart);
+        gainMagnitude = 1 / denomMagnitude;
+        phaseShift = -Math.atan2(imagPart, realPart);
+    }
+    
+    // Draw grid
+    ctx.strokeStyle = 'rgba(255, 0, 255, 0.15)';
+    ctx.lineWidth = 1;
+    for (let i = 0; i < width; i += 60) {
+        ctx.beginPath();
+        ctx.moveTo(i, 0);
+        ctx.lineTo(i, height);
+        ctx.stroke();
+    }
+    for (let i = 0; i < height; i += 40) {
+        ctx.beginPath();
+        ctx.moveTo(0, i);
+        ctx.lineTo(width, i);
+        ctx.stroke();
+    }
+    
+    // Center line
+    ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    ctx.moveTo(0, centerY);
+    ctx.lineTo(width, centerY);
+    ctx.stroke();
+    
+    // Draw input signal
+    ctx.strokeStyle = '#00ffff';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    for (let x = 0; x < width; x++) {
+        const t = (x / width) * 6 * Math.PI + time;
+        const y = centerY - scaledAmplitude * Math.sin(t);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    
+    // Draw output signal
+    ctx.strokeStyle = '#00ff00';
+    ctx.lineWidth = 4;
+    ctx.beginPath();
+    for (let x = 0; x < width; x++) {
+        const t = (x / width) * 6 * Math.PI + time;
+        const y = centerY - scaledAmplitude * gainMagnitude * Math.sin(t + phaseShift);
+        if (x === 0) ctx.moveTo(x, y);
+        else ctx.lineTo(x, y);
+    }
+    ctx.stroke();
+    
+    // Comparison info panel
+    ctx.fillStyle = 'rgba(0, 0, 0, 0.85)';
+    ctx.fillRect(15, 15, 500, 140);
+    ctx.strokeStyle = 'rgba(255, 0, 255, 0.6)';
+    ctx.lineWidth = 2;
+    ctx.strokeRect(15, 15, 500, 140);
+    
+    // Title
+    ctx.fillStyle = '#ff00ff';
+    ctx.font = 'bold 18px Arial';
+    ctx.fillText('Waveform Comparison Analysis', 25, 40);
+    
+    // Comparison data
+    ctx.fillStyle = '#00ffff';
+    ctx.font = '14px Arial';
+    ctx.fillText('📊 Input Signal:', 25, 65);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`Amplitude: ${amplitude}V, Frequency: ${frequency}Hz`, 140, 65);
+    
+    ctx.fillStyle = '#00ff00';
+    ctx.font = '14px Arial';
+    ctx.fillText('📈 Output Signal:', 25, 85);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`Amplitude: ${(amplitude * gainMagnitude).toFixed(2)}V, Phase Shift: ${(phaseShift * 180 / Math.PI).toFixed(1)}°`, 140, 85);
+    
+    ctx.fillStyle = '#ffff00';
+    ctx.font = '14px Arial';
+    ctx.fillText('⚙️ Circuit Parameters:', 25, 105);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`τ = ${(timeConstant * 1000000).toFixed(1)}µs, fc = ${Math.round(1/(2*Math.PI*timeConstant))}Hz`, 170, 105);
+    
+    ctx.fillStyle = '#ff8800';
+    ctx.font = '14px Arial';
+    ctx.fillText('📈 Transfer Function:', 25, 125);
+    ctx.fillStyle = '#ffffff';
+    ctx.fillText(`|H(jω)| = ${gainMagnitude.toFixed(3)}, ∠H(jω) = ${(phaseShift * 180 / Math.PI).toFixed(1)}°`, 170, 125);
 }
 
 function drawBodePlot() {
-    console.log('Drawing Bode plot...');
     const canvas = document.getElementById('bodeCanvas');
-    if (!canvas) {
-        console.error('Bode canvas not found');
-        return;
-    }
+    if (!canvas) return;
     
     const ctx = canvas.getContext('2d');
+    const width = canvas.width;
+    const height = canvas.height;
     
     // Clear canvas
-    ctx.fillStyle = 'rgba(0, 0, 0, 0.9)';
-    ctx.fillRect(0, 0, canvas.width, canvas.height);
+    const gradient = ctx.createLinearGradient(0, 0, 0, height);
+    gradient.addColorStop(0, 'rgba(0, 0, 0, 0.9)');
+    gradient.addColorStop(1, 'rgba(0, 30, 60, 0.9)');
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, width, height);
     
     const timeConstant = resistance * capacitance / 1000000;
     const cornerFreq = 1 / (2 * Math.PI * timeConstant);
     const margin = 80;
-    const plotWidth = canvas.width - 2 * margin;
-    const plotHeight = canvas.height - 2 * margin;
+    const plotWidth = width - 2 * margin;
+    const plotHeight = height - 2 * margin;
     
     // Draw grid
     ctx.strokeStyle = 'rgba(0, 255, 255, 0.2)';
@@ -805,8 +967,7 @@ function drawBodePlot() {
         ctx.moveTo(x, margin);
         ctx.lineTo(x, margin + plotHeight);
         ctx.stroke();
-    }
-    for (let i = 0; i <= 10; i++) {
+        
         const y = margin + (i / 10) * plotHeight;
         ctx.beginPath();
         ctx.moveTo(margin, y);
@@ -827,8 +988,8 @@ function drawBodePlot() {
     ctx.lineTo(margin, margin + plotHeight);
     ctx.stroke();
     
-    // Draw frequency response
-    ctx.strokeStyle = '#00ff00';
+    // Draw frequency response curve
+    ctx.strokeStyle = circuitType === 'preemphasis' ? '#00ff00' : '#ff00ff';
     ctx.lineWidth = 4;
     ctx.beginPath();
     
@@ -848,7 +1009,7 @@ function drawBodePlot() {
         }
         
         const magnitudeDb = 20 * Math.log10(magnitude);
-        const normalizedMagnitude = Math.max(0, Math.min(1, (magnitudeDb + 20) / 40));
+        const normalizedMagnitude = Math.max(0, Math.min(1, (magnitudeDb + 30) / 60));
         
         const x = margin + i;
         const y = margin + plotHeight - normalizedMagnitude * plotHeight;
@@ -858,7 +1019,7 @@ function drawBodePlot() {
     }
     ctx.stroke();
     
-    // Corner frequency line
+    // Corner frequency marker
     const cornerX = margin + (Math.log10(cornerFreq / minFreq) / Math.log10(maxFreq / minFreq)) * plotWidth;
     if (cornerX >= margin && cornerX <= margin + plotWidth) {
         ctx.strokeStyle = '#ff0000';
@@ -869,25 +1030,49 @@ function drawBodePlot() {
         ctx.lineTo(cornerX, margin + plotHeight);
         ctx.stroke();
         ctx.setLineDash([]);
+        
+        ctx.fillStyle = '#ff0000';
+        ctx.font = 'bold 14px Arial';
+        ctx.textAlign = 'center';
+        ctx.fillText(`fc = ${Math.round(cornerFreq)}Hz`, cornerX, margin - 10);
     }
     
-    // Labels
+    // Labels and title
     ctx.fillStyle = '#ffffff';
-    ctx.font = 'bold 16px Arial';
+    ctx.font = 'bold 18px Arial';
     ctx.textAlign = 'center';
-    ctx.fillText('Frequency (Hz)', canvas.width / 2, canvas.height - 20);
+    ctx.fillText(`${circuitType === 'preemphasis' ? 'Pre-emphasis' : 'De-emphasis'} Frequency Response`, width / 2, 30);
+    
+    ctx.font = 'bold 16px Arial';
+    ctx.fillText('Frequency (Hz)', width / 2, height - 15);
     
     ctx.save();
-    ctx.translate(30, canvas.height / 2);
+    ctx.translate(25, height / 2);
     ctx.rotate(-Math.PI / 2);
     ctx.fillText('Magnitude (dB)', 0, 0);
     ctx.restore();
     
-    console.log('Bode plot drawn successfully');
-}
-
-function drawComparison() {
-    drawWaveform(); // Reuse the waveform drawing function
+    // Frequency scale labels
+    ctx.font = '12px Arial';
+    ctx.fillStyle = '#00ffff';
+    const freqLabels = [1, 10, 100, 1000, 10000, 100000];
+    freqLabels.forEach(freq => {
+        const x = margin + (Math.log10(freq / minFreq) / Math.log10(maxFreq / minFreq)) * plotWidth;
+        if (x >= margin && x <= margin + plotWidth) {
+            ctx.textAlign = 'center';
+            ctx.fillText(freq >= 1000 ? `${freq/1000}k` : freq.toString(), x, margin + plotHeight + 20);
+        }
+    });
+    
+    // Magnitude scale labels
+    for (let i = -20; i <= 20; i += 10) {
+        const normalizedMag = (i + 30) / 60;
+        const y = margin + plotHeight - normalizedMag * plotHeight;
+        if (y >= margin && y <= margin + plotHeight) {
+            ctx.textAlign = 'right';
+            ctx.fillText(`${i}dB`, margin - 10, y + 5);
+        }
+    }
 }
 
 // Voice guide
@@ -907,7 +1092,6 @@ function playVoiceGuide() {
         
         speechSynthesis.speak(utterance);
         
-        // Visual feedback
         const btn = document.getElementById('playVoice');
         btn.textContent = '🔊 Playing...';
         btn.disabled = true;
