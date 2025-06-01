@@ -1,0 +1,46 @@
+{
+
+   "details": [
+       {
+			"Experiment": "Pre-emphasis & De-emphasis Circuit Behavior",     
+			"Lab": "Communication Engineering Lab",               
+			"Discipline": "Electronics & Communication Engineering",				 
+			"Technology": "HTML CSS Javascript"         
+       }
+   ],
+
+   "developer": [
+       {       
+      "Developer": "Mr. Rajeev Kumar",         
+      "Institute": "Rajkiya Engineering College , Kannauj",         
+      "InstituteAcronym": "RECK"   
+       }
+   ],
+
+   "contributer": [
+       {       
+			"Contributer": "Dhruv Narayan Singh",             
+      "Institute": "Rajkiya Engineering College , Kannauj",               
+			"InstituteAcronym": "RECK"         
+       },
+
+       {       
+			"Contributer": "Ashutosh Kumar Yadav",              
+      "Institute": "Rajkiya Engineering College , Kannauj",               
+			"InstituteAcronym": "RECK"         
+       },
+
+       {       
+			"Contributer": "Manmohan",             
+      "Institute": "Rajkiya Engineering College , Kannauj",               
+			"InstituteAcronym": "RECK"         
+       },
+
+       {       
+			"Contributer": "Anand Kumar",              
+      "Institute": "Rajkiya Engineering College , Kannauj",               
+			"InstituteAcronym": "RECK"         
+       }
+   ]
+
+}
