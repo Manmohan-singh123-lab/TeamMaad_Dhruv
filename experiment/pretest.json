@@ -2,35 +2,86 @@
   "version": 2.0,
   "questions": [
     {
-      "question": "This is a Sample Question 1?",
+      "question": " What is the main purpose of a pre-emphasis circuit in communication systems?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": " To amplify low-frequency signals",
+        "b": "To suppress noise completely",
+        "c": "To boost high-frequency components before transmission",
+        "d": "To detect amplitude variations"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Incorrect  <a href='www.google.com'>here</a>",
+        "b": "Incorrect",
+        "c": "Correct",
+        "d": "Incorrect"
       },
-      "correctAnswer": "a",
+      "correctAnswer": "c",
       "difficulty": "beginner"
     },
     {
-      "question": "This is a Sample Question 2?",
+      "question": "What type of filter is typically used in a pre-emphasis circuit?",
       "answers": {
-        "a": "answer1",
-        "b": "answer2",
-        "c": "answer3",
-        "d": "answer4"
+        "a": " Low-pass filter",
+        "b": " Band-stop filter",
+        "c": "High-pass filter",
+        "d": "Band-pass filter"
       },
       "explanations": {
-        "a": "Explanation 1  <a href='www.google.com'>here</a>",
-        "b": "Explanation 2",
-        "c": "Explanation 2",
-        "d": "Explanation 2"
+        "a": "Incorrect  <a href='www.google.com'>here</a>",
+        "b": "Incorrect",
+        "c": "Correct",
+        "d": "Incorrect"
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "The de-emphasis circuit is used at which end of the communication system?",
+      "answers": {
+        "a": "Transmitter",
+        "b": "Receiver",
+        "c": "Both Transmitter and Receiver",
+        "d": "Ground"
+      },
+      "explanations": {
+        "a": "Incorrect  <a href='www.google.com'>here</a>",
+        "b": "Correct",
+        "c": "Incorrect",
+        "d": "Incorrect"
+      },
+      "correctAnswer": "b",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "What is the result when a de-emphasis circuit is applied after a pre-emphasis circuit?",
+      "answers": {
+        "a": " Signal is distorted",
+        "b": " Noise increases",
+        "c": "Original signal is restored",
+        "d": "Frequency becomes zero"
+      },
+      "explanations": {
+        "a": "Incorrect  <a href='www.google.com'>here</a>",
+        "b": "Incorrect",
+        "c": "Correct",
+        "d": "Incorrect"
+      },
+      "correctAnswer": "c",
+      "difficulty": "beginner"
+    },
+    {
+      "question": "Which parameter is improved by using pre-emphasis and de-emphasis techniques?",
+      "answers": {
+        "a": " Bandwidth",
+        "b": " Power",
+        "c": "Signal-to-noise ratio (SNR)",
+        "d": "Phase"
+      },
+      "explanations": {
+        "a": "Incorrect  <a href='www.google.com'>here</a>",
+        "b": "Incorrect",
+        "c": "Correct",
+        "d": "Incorrect"
       },
       "correctAnswer": "c",
       "difficulty": "beginner"
