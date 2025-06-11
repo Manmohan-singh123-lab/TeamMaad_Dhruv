@@ -15,7 +15,7 @@ Pre-emphasis and de-emphasis are techniques used in communication systems to imp
 
 <b>Name of Developer | <b> Mr. Rajeev Kumar 
 :--|:--|
-<b> Institute | <b>  Rajkiya Engineering College , Kannnauj
+<b> Institute | <b>  Rajkiya Engineering College , Kannauj 
 <b> Email id|     <b>  rejeev@reck.ac.in
 <b> Department | <b> Electronics Engineering
 
@@ -23,7 +23,7 @@ Pre-emphasis and de-emphasis are techniques used in communication systems to imp
 
 SrNo | Name | Faculty or Student | Department| Institute | Email id
 :--|:--|:--|:--|:--|:--|
-1 | Manmohan | Student | Electronics Engineering | Rajkiya Engineering College , Kannnauj | manmohanshakya18122006@gmail.com
-2 | Dhruv Narayan Singh| Student | Computer Science & Engineering | Rajkiya Engineering College , Kannnauj | 2308390100026@reck.ac.in
-3 | Anand Kumar | Student | Electronics Engineering | Rajkiya Engineering College , Kannnauj | anandkumar9839sam@gmail.com
-4 | Ashutosh Kumar Yadav | Student | Electronics Engineering | Rajkiya Engineering College , Kannnauj | aky9541@gmail.com
+1 | Manmohan | Student | Electronics Engineering | Rajkiya Engineering College , Kannauj | manmohanshakya18122006@gmail.com
+2 | Dhruv Narayan Singh| Student | Computer Science & Engineering | Rajkiya Engineering College , Kannauj | 2308390100026@reck.ac.in
+3 | Anand Kumar | Student | Electronics Engineering | Rajkiya Engineering College , Kannauj | anandkumar9839sam@gmail.com
+4 | Ashutosh Kumar Yadav | Student | Electronics Engineering | Rajkiya Engineering College , Kannauj | aky9541@gmail.com
